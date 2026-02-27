@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-FlowDeskApplication<FlowDesk>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "spring.tuto.flowdesk.FlowDeskApplication",
+            "projectName": "FlowDesk",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
