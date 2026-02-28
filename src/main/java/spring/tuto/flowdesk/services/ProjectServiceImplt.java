@@ -5,7 +5,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import spring.tuto.flowdesk.dto.ListRequestProject;
 import spring.tuto.flowdesk.dto.ProjectRequest;
@@ -72,20 +71,27 @@ public class ProjectServiceImplt implements ProjectService{
 
     @Override
     public ListRequestProject getAllPendingReqests(
-            Integer pageNumber, Integer pageSize, String sortBy, String sortMethod
-    ) {
+            Integer pageNumber, Integer pageSize, String sortBy, String sortMethod,
+            String selectedStatus) {
 
         Sort sort = sortMethod.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
-        Pageable page = PageRequest.of(pageNumber,pageSize);
+        Pageable page = PageRequest.of(pageNumber,pageSize,sort);
+        Page<Project> pagedPendingProjects;
 
-        Page<Project> pagedPendingProjects = projectRepository.findByProjectStatus(ProjectStatus.PENDING,page);
+        String statusParam = selectedStatus == null ? "" : selectedStatus.trim();
+        boolean hasSpecificStatus = !statusParam.isEmpty() && !"ALL".equalsIgnoreCase(statusParam);
+        if(hasSpecificStatus){
+            pagedPendingProjects = projectRepository.findByProjectStatus(ProjectStatus.valueOf(selectedStatus),page);
+
+        }else{
+
+            pagedPendingProjects = projectRepository.findAll(page);
+
+        }
 
         List<Project> pendingProjects = pagedPendingProjects.getContent();
 
-        if(pendingProjects.isEmpty()){
 
-            throw  new RessourceNotFoundException("Project","pojectStatus", String.valueOf(ProjectStatus.PENDING));
-        }
 
         List<ProjectRequest> sentList = pendingProjects.stream().map(p->{
 
@@ -118,5 +124,38 @@ public class ProjectServiceImplt implements ProjectService{
         return pendingProjcectDetails;
 
 
+    }
+
+    @Override
+    public ProjectRequest updateServiceStatus(String newStatus, Long serviceId) {
+
+        Project updatedProject = projectRepository.findById(serviceId).orElseThrow(
+                ()-> new RessourceNotFoundException("Project","ProjectId",serviceId)
+        );
+
+        updatedProject.setProjectStatus(ProjectStatus.valueOf(newStatus));
+
+        Project savedProject = projectRepository.save(updatedProject);
+
+        ProjectRequest serviceBookDto = new ProjectRequest();
+
+        serviceBookDto.setServiceName(updatedProject.getService().getServiceName());
+        serviceBookDto.setProjectId(updatedProject.getProjectId());
+
+        serviceBookDto.setProjectStatus(updatedProject.getProjectStatus());
+
+        serviceBookDto.setProjectDescription("");
+        serviceBookDto.setProjectName(updatedProject.getProjectName());
+
+
+        serviceBookDto.setPrice(savedProject.getService().getServicePrice());
+        serviceBookDto.setUserEmail(updatedProject.getProjectOwner().getUserEmail());
+        serviceBookDto.setUserFirstName(updatedProject.getProjectOwner().getFirstName());
+        serviceBookDto.setUserLastName(updatedProject.getProjectOwner().getLastName());
+
+
+
+
+        return serviceBookDto;
     }
 }

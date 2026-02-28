@@ -5,12 +5,12 @@ import spring.tuto.flowdesk.dto.ListRequestProject;
 import spring.tuto.flowdesk.dto.ProjectRequest;
 import spring.tuto.flowdesk.dto.ServiceBookDto;
 
-import java.util.List;
-
 @Service
 public interface ProjectService {
-    public ServiceBookDto RequestService(Long serviceId);
+     ServiceBookDto RequestService(Long serviceId);
 
 
-    ListRequestProject getAllPendingReqests(Integer pageNumber, Integer pageSize, String sortBy, String sortMethod);
+    ListRequestProject getAllPendingReqests(Integer pageNumber, Integer pageSize, String sortBy, String sortMethod, String selectedStatus);
+
+    ProjectRequest updateServiceStatus(String newStatus, Long serviceId);
 }
