@@ -21,6 +21,9 @@ public class ProjectController {
     @Autowired
     private ProjectService projectService;
 
+    /** test if the pipline is working correctly**/
+    /** test  the building with actions**/
+
 
     @PreAuthorize("hasRole('CLIENT')")
     @PostMapping("/bookService/{serviceId}")
