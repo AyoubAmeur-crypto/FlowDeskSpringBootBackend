@@ -12,7 +12,6 @@ import spring.tuto.flowdesk.dto.ProjectRequest;
 import spring.tuto.flowdesk.dto.ServiceBookDto;
 import spring.tuto.flowdesk.services.ProjectService;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/project")
@@ -40,15 +39,29 @@ public class ProjectController {
             @RequestParam(defaultValue = ConstantValue.PAGE_NUMBER, required = false) Integer pageNumber,
             @RequestParam(defaultValue = ConstantValue.PAGE_SIZE, required = false) Integer pageSize,
             @RequestParam(defaultValue = ConstantValue.SORT_BY_PROJECT, required = false) String sortBy,
-            @RequestParam(defaultValue = ConstantValue.SORT_METHOD, required = false) String sortMethod
+            @RequestParam(defaultValue = ConstantValue.SORT_METHOD, required = false) String sortMethod,
+            @RequestParam String selectedStatus
     ){
 
-        ListRequestProject pendingUserRequests = projectService.getAllPendingReqests(pageNumber,pageSize,sortBy,sortMethod);
+        ListRequestProject pendingUserRequests = projectService.getAllPendingReqests(pageNumber,pageSize,sortBy,sortMethod,selectedStatus);
 
 
         return ResponseEntity.status(HttpStatus.OK).body(pendingUserRequests);
 
 
 
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/updateBookService/{serviceId}")
+    public ResponseEntity<ProjectRequest> updateBookServiceStatus(
+            @PathVariable Long serviceId,
+            @RequestParam String newStatus
+    ){
+        ProjectRequest updatedService = projectService.updateServiceStatus(newStatus,serviceId);
+
+
+
+        return ResponseEntity.status(HttpStatus.OK).body(updatedService);
     }
 }
