@@ -36,6 +36,25 @@ public class ProjectController {
         return ResponseEntity.status(HttpStatus.CREATED).body(serviceBook);
     }
 
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/getAcceptedProject")
+    public  ResponseEntity<ListRequestProject> getAcceptedProject(
+            @RequestParam(defaultValue = ConstantValue.PAGE_NUMBER, required = false) Integer pageNumber,
+            @RequestParam(defaultValue = ConstantValue.PAGE_SIZE, required = false) Integer pageSize,
+            @RequestParam(defaultValue = ConstantValue.SORT_BY_PROJECT, required = false) String sortBy,
+            @RequestParam(defaultValue = ConstantValue.SORT_METHOD, required = false) String sortMethod
+    ){
+
+        ListRequestProject allAcceptedProject = projectService.getAcceptedProject(pageNumber,pageSize,sortBy,sortMethod);
+
+
+
+
+
+        return ResponseEntity.status(HttpStatus.OK).body(allAcceptedProject);
+    }
+
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/getRequestedService")
     public ResponseEntity<ListRequestProject> getPendingRequests(

@@ -99,8 +99,12 @@ public class ProjectServiceImplt implements ProjectService{
             bookedService.setUserEmail(p.getProjectOwner().getUserEmail());
             bookedService.setUserFirstName(p.getProjectOwner().getFirstName());
             bookedService.setUserLastName(p.getProjectOwner().getLastName());
-            bookedService.setPrice(p.getService().getServicePrice());
-            bookedService.setServiceName(p.getService().getServiceName());
+            if(p.getService() != null){
+
+                bookedService.setPrice(p.getService().getServicePrice());
+                bookedService.setServiceName(p.getService().getServiceName());
+            }
+
             bookedService.setProjectId(p.getProjectId());
             bookedService.setProjectName(p.getProjectName());
             bookedService.setProjectStatus(p.getProjectStatus());
@@ -157,5 +161,61 @@ public class ProjectServiceImplt implements ProjectService{
 
 
         return serviceBookDto;
+    }
+
+    @Override
+    public ListRequestProject getAcceptedProject(Integer pageNumber, Integer pageSize, String sortBy, String sortMethod) {
+
+        Sort sort = sortBy.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+
+
+        Pageable page = PageRequest.of(pageNumber,pageSize,sort);
+
+        Page<Project> requestedPageProject = projectRepository.findByProjectStatus(ProjectStatus.ACCEPTED,page);
+
+        List<Project> projectsConvertedFrompage = requestedPageProject.getContent();
+
+        ListRequestProject acceptedProjects = new ListRequestProject();
+
+        acceptedProjects.setTotalElements(requestedPageProject.getTotalElements());
+        acceptedProjects.setPageSize(requestedPageProject.getSize());
+        acceptedProjects.setLastPage(requestedPageProject.isLast());
+        acceptedProjects.setPageNumber(requestedPageProject.getNumber());
+        acceptedProjects.setTotalPage(requestedPageProject.getTotalPages());
+
+
+        List<ProjectRequest> projectRequests = projectsConvertedFrompage.stream().map(p->{
+
+
+            ProjectRequest mappedOne = new ProjectRequest();
+            mappedOne.setProjectStatus(p.getProjectStatus());
+            mappedOne.setProjectId(p.getProjectId());
+            mappedOne.setProjectName(p.getProjectName());
+            mappedOne.setProjectDescription(p.getProjectDDescription());
+            if(p.getService() != null){
+                mappedOne.setPrice(p.getService().getServicePrice());
+                mappedOne.setServiceName(p.getService().getServiceName());
+
+            }
+
+            mappedOne.setUserEmail(p.getProjectOwner().getUserEmail());
+            mappedOne.setUserLastName(p.getProjectOwner().getLastName());
+            mappedOne.setUserFirstName(p.getProjectOwner().getFirstName());
+            mappedOne.setProjectDescription(p.getProjectDDescription());
+
+
+            return mappedOne;
+
+
+        }).toList();
+
+        acceptedProjects.setAllRequestedProject(projectRequests);
+
+        return acceptedProjects;
+
+
+
+
+
     }
 }

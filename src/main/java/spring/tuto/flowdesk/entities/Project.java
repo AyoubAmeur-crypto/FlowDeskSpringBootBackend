@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import spring.tuto.flowdesk.enums.ProjectStatus;
 
 import java.time.LocalDate;
@@ -41,6 +43,7 @@ public class Project {
 
     @ManyToOne()
     @JoinColumn(name = "service_id")
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     private Service service;
 
     @ElementCollection

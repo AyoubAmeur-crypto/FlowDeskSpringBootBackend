@@ -12,4 +12,6 @@ import java.util.List;
 public interface ProjectRepository extends JpaRepository<Project,Long> {
 
     Page<Project> findByProjectStatus(@NotNull ProjectStatus projectStatus, Pageable pageable);
+
+    List<Project> findByServiceServiceId(Long serviceId);
 }

@@ -56,10 +56,7 @@ public class CategoryServiceImplt implements CategoryServices{
 
         List<Category> allCategories = allCategoriesPage.getContent();
 
-        if(allCategories.isEmpty()){
 
-            throw  new ApiException("there is no category exists");
-        }
 
         ListOfCategoriesDto categoriesDtos = new ListOfCategoriesDto();
 

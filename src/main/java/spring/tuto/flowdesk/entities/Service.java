@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity(name="services")
 @Data
 @NoArgsConstructor
@@ -26,6 +28,9 @@ public class Service {
 
     @NotBlank
     private String imageUrl;
+
+    @OneToMany(mappedBy = "service")
+    private List<Project> allProjectInService;
 
 
     @NotNull
