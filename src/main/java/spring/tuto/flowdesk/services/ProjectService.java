@@ -13,4 +13,6 @@ public interface ProjectService {
     ListRequestProject getAllPendingReqests(Integer pageNumber, Integer pageSize, String sortBy, String sortMethod, String selectedStatus);
 
     ProjectRequest updateServiceStatus(String newStatus, Long serviceId);
+
+    ListRequestProject getAcceptedProject(Integer pageNumber, Integer pageSize, String sortBy, String sortMethod);
 }

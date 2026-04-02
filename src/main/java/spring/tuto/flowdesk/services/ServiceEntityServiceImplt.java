@@ -16,11 +16,13 @@ import spring.tuto.flowdesk.dto.ListServicesDto;
 import spring.tuto.flowdesk.dto.ServiceDto;
 import spring.tuto.flowdesk.dto.ServiceDtoSummary;
 import spring.tuto.flowdesk.entities.Category;
+import spring.tuto.flowdesk.entities.Project;
 import spring.tuto.flowdesk.exceptions.ApiException;
 import spring.tuto.flowdesk.exceptions.ResponseStructure;
 import spring.tuto.flowdesk.exceptions.RessourceNotFoundException;
 import spring.tuto.flowdesk.repositories.CategoryRepository;
 import spring.tuto.flowdesk.repositories.ServiceRepository;
+import spring.tuto.flowdesk.repositories.ProjectRepository;
 
 import java.io.IOException;
 import java.util.List;
@@ -40,6 +42,8 @@ public class ServiceEntityServiceImplt implements ServiceEntityService{
     ModelMapper modelMapper;
     @Autowired
     private ServiceRepository serviceRepository;
+    @Autowired
+    private ProjectRepository projectRepository;
 
 
     private static final Logger log = LoggerFactory.getLogger(ServiceEntityServiceImplt.class);
@@ -188,7 +192,21 @@ public class ServiceEntityServiceImplt implements ServiceEntityService{
                 ()-> new RessourceNotFoundException("Service","ServiceId",serviceId)
         );
 
+
+
         Category checkCategory = deletedOne.getCategory();
+
+        List<Project> allProjects = deletedOne.getAllProjectInService();
+
+        allProjects.stream().map(p->{
+
+            p.setService(null);
+
+            projectRepository.save(p);
+            return p;
+
+
+        }).toList();
 
 
         if(checkCategory != null && checkCategory.getServices() != null){
@@ -203,22 +221,13 @@ public class ServiceEntityServiceImplt implements ServiceEntityService{
         }
 
 
-        log.debug("check if the controller reach this before delete");
-
-
+        log.debug("Deleting service with ID: {}", serviceId);
 
         serviceRepository.delete(deletedOne);
 
-        log.debug("check if the controller reach this after delete");
+        log.debug("Service with ID: {} has been deleted successfully", serviceId);
 
-
-
-        ResponseStructure map = new ResponseStructure("Service "+serviceId+" has been deleted successfully",true);
-
-        return map;
-
-
-
+        return new ResponseStructure("Service "+serviceId+" has been deleted successfully",true);
     }
 
 
