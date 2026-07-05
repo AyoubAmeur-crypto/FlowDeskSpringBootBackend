@@ -1,9 +1,9 @@
 # ============================================================
-# FlowDesk Backend — Multi-stage Dockerfile
+# FlowDesk Backend - Multi-stage Dockerfile
 # ============================================================
+
 # Build stage: Maven + JDK 17
-# ------------------------------------------------------------
-FROM eclipse-temurin:17-jdk-alpine AS builder
+FROM maven:3.9-eclipse-temurin-17-alpine AS builder
 LABEL stage=builder
 
 WORKDIR /app
@@ -19,9 +19,7 @@ RUN --mount=type=cache,target=/root/.m2 \
     mvn clean package -DskipTests -B -q && \
     mv target/*.jar app.jar
 
-# ============================================================
-# Runtime stage: JDK 17 (slim)
-# ------------------------------------------------------------
+# Runtime stage: JRE 17
 FROM eclipse-temurin:17-jre-alpine
 
 WORKDIR /app
